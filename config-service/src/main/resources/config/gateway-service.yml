@@ -1,0 +1,49 @@
+server:
+  port: 8060
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8061/eureka/
+
+logging:
+  pattern: 
+    console: "%d{yyyy-MM-dd HH:mm:ss} ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+              
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+      - id: olxadvertises-service
+        uri: lb://olxadvertises-service
+        predicates:
+        - Path=/advertises/**
+        filters:
+        - RewritePath=/advertises/(?<path>.*), /$\{path}
+      - id: olxlogin-service
+        uri: lb://olxlogin-service
+        predicates:
+        - Path=/login/**
+        filters:
+        - RewritePath=/login/(?<path>.*), /$\{path}
+      - id: olxmasterdata-service
+        uri: lb://olxmasterdata-service
+        predicates:
+        - Path=/master-data/**
+        filters:
+        - RewritePath=/master-data/(?<path>.*), /$\{path}
+springdoc:
+  swagger-ui:
+    urls:
+      - name: advertises
+        url: /v3/api-docs/advertises
+      - name: login
+        url: /v3/api-docs/login
+      - name: master-data
+        url: /v3/api-docs/master-data
+      
